@@ -1,11 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function App() {
+	const [date, setDate] = useState(Date.now() / 1000)
 	const [sortType, setSortType] = useState('date') // priority
 	const [sortOrder, setSortOrder] = useState('asc') // desc
 	const [tasks, setTasks] = useState([])
 	const activeTasks = sortTask(tasks.filter(task => !task.completed))
 	const completedTasks = tasks.filter(task => task.completed)
+
+	useEffect(() => {
+		function changeDate() {
+			const timer = setInterval(() => {
+				setDate(Date.now() / 1000)
+			}, 1000)
+		}
+		changeDate()
+	}, [])
 
 	function deleteTask(id) {
 		setTasks(tasks.filter(task => task.id != id))
@@ -58,6 +68,7 @@ function App() {
 					sortType={sortType}
 					sortOrder={sortOrder}
 					toogleSortOrder={toogleSortOrder}
+					date={date}
 				/>
 			</div>
 			<div className='completed-task-container'>
@@ -146,6 +157,7 @@ function TaskList({
 	toogleSortOrder,
 	sortType,
 	sortOrder,
+	date,
 }) {
 	const [isOpen, switchOpen] = useState(true)
 
@@ -183,6 +195,12 @@ function TaskList({
 								task={task}
 								deleteTask={deleteTask}
 								completeTask={completeTask}
+								isOverdue={
+									date - Math.floor(new Date(task.deadline).getTime() / 1000) >
+									0
+										? true
+										: false
+								}
 							/>
 						)}
 					</ul>
@@ -213,12 +231,17 @@ function CompletedTasks({ completedTasks, deleteTask }) {
 	)
 }
 
-function TaskItem({ task, deleteTask, completeTask }) {
+function TaskItem({ task, deleteTask, completeTask, isOverdue }) {
 	return (
-		<li className={`task-item ${task.priority.toLowerCase()}`}>
+		<li
+			className={`task-item ${task.priority.toLowerCase()} ${
+				isOverdue && 'overdue'
+			}`}
+		>
 			<div className='task-info'>
 				<div>
-					{task.title} - <strong>{task.priority}</strong>
+					{task.title} -{' '}
+					<strong>{isOverdue ? 'overdue' : task.priority}</strong>
 				</div>
 				<div className='task-deadline'>Due: {task.deadline}</div>
 			</div>
