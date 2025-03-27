@@ -22,7 +22,7 @@ TaskList - это простое приложение на React для упра
 
 1. Клонируйте репозиторий:
    ```sh
-   git clone https://github.com/your-repo/tasklist.git
+   git clone https://github.com/OneLey/react-tasklist
    ```
 2. Перейдите в папку проекта:
    ```sh
